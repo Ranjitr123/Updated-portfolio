@@ -1160,37 +1160,55 @@
 
           <h3 class="h3 form-title">Contact Form</h3>
 
-          <form id="contactForm" class="form" data-form>
+          <div id="contact-container">
+            <form id="contactForm" class="form" data-form>
 
-            <div class="input-wrapper">
-              <input type="text" name="name" id="name" class="form-input" placeholder="Full name" required
-                data-form-input>
-              <input type="email" name="email" id="email" class="form-input" placeholder="Email address" required
-                data-form-input>
-            </div>
-            <div class="input-wrapper">
-              <input type="tel" name="phone" id="phone" class="form-input" placeholder="Phone Number" required
-                data-form-input>
-            </div>
+              <div class="input-wrapper">
+                <input type="text" name="name" id="name" class="form-input" placeholder="Full name" required
+                  data-form-input>
+                <input type="email" name="email" id="email" class="form-input" placeholder="Email address" required
+                  data-form-input>
+              </div>
+              <div class="input-wrapper">
+                <input type="tel" name="phone" id="phone" class="form-input" placeholder="Phone Number" required
+                  data-form-input>
+              </div>
 
-            <textarea name="message" id="message" class="form-input" placeholder="Your Message" required
-              data-form-input></textarea>
+              <textarea name="message" id="message" class="form-input" placeholder="Your Message" required
+                data-form-input></textarea>
 
-            <!-- Button and loader container -->
-            <div class="form-button-wrapper">
-              <button id="sendBtn" class="form-btn" type="submit" data-form-btn>
-                <ion-icon name="paper-plane"></ion-icon>
-                <span>Send Message</span>
+              <!-- Button and loader container -->
+              <div class="form-button-wrapper">
+                <button id="sendBtn" class="form-btn" type="submit" data-form-btn>
+                  <ion-icon name="paper-plane"></ion-icon>
+                  <span>Send Message</span>
+                </button>
+
+                <!-- Loader image (hidden by default) -->
+                <span id="sendingText" style="display: none; margin-left: 10px; color: #DCD427;"> Wait... ! We are
+                  sending
+                  your message ........</span>
+
+              </div>
+
+              <div id="response" class="mt-3"></div>
+            </form>
+
+            <div id="successMessage"
+              style="display: none; text-align: center; padding: 40px 20px; background: var(--eerie-black-2); border-radius: 14px; border: 1px solid var(--jet);">
+              <div style="font-size: 60px; color: var(--orange-yellow-crayola); margin-bottom: 20px;">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+              </div>
+              <h3 class="h3" style="color: var(--white-2); margin-bottom: 10px;">Message Sent!</h3>
+              <p style="color: var(--light-gray); margin-bottom: 25px;">
+                Thank you for contacting me! I have received your message and will get back to you shortly.
+              </p>
+              <button class="form-btn" style="width: auto; margin: 0 auto;"
+                onclick="document.getElementById('contactForm').style.display='block'; document.getElementById('successMessage').style.display='none'; document.getElementById('contactForm').reset();">
+                <span>Send Another Message</span>
               </button>
-
-              <!-- Loader image (hidden by default) -->
-              <span id="sendingText" style="display: none; margin-left: 10px; color: #DCD427;"> Wait... ! We are sending
-                your message ........</span>
-
             </div>
-
-            <div id="response" class="mt-3"></div>
-          </form>
+          </div>
 
 
         </section>
@@ -1270,6 +1288,8 @@
 
       const sendBtn = document.getElementById('sendBtn');
       const sendingText = document.getElementById('sendingText');
+      const contactForm = document.getElementById('contactForm');
+      const successMessage = document.getElementById('successMessage');
 
       // Disable button and show loader
       sendBtn.disabled = true;
@@ -1282,6 +1302,8 @@
       formData.append('phone', phone);
       formData.append('message', message);
 
+      // IMPORTANT: Replace 'send.php' with the full URL of your PHP host
+      // Example: fetch('https://your-php-backend.com/send.php', { ... })
       fetch('send.php', {
         method: 'POST',
         body: formData,
@@ -1293,11 +1315,10 @@
           sendingText.style.display = 'none';
 
           if (responseText.includes('Message has been sent')) {
-            document.getElementById('response').innerHTML = '<div style="color: greenyellow;">Thanks for contacting me, I will get back to you soon!</div>';
-            document.getElementById('contactForm').reset();
-            setTimeout(() => {
-              window.location.href = 'thankyou.html';
-            }, 2000);
+            // Show success state and hide form
+            contactForm.style.display = 'none';
+            successMessage.style.display = 'block';
+            document.getElementById('response').innerHTML = ''; // clear error messages
           } else {
             document.getElementById('response').innerHTML = '<div style="color: red;">' + responseText + '</div>';
           }
