@@ -1,3 +1,64 @@
+<?php
+// Use the proper namespaces for PHPMailer at global scope
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
+
+// Handle form submission within the same file
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'])) {
+    // Manually include PHPMailer files
+    require 'PHPMailer/src/Exception.php';
+    require 'PHPMailer/src/PHPMailer.php';
+    require 'PHPMailer/src/SMTP.php';
+
+    $name = $_POST['name'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $phone = $_POST['phone'] ?? '';
+    $message = $_POST['message'] ?? '';
+
+    // --- PHPMailer ---
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'ranjitrautaray475@gmail.com';
+        $mail->Password   = 'xeic ubof gibs euzo'; 
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port       = 465;
+
+        // Email to client
+        $mail->setFrom('ranjitrautaray475@gmail.com', 'Contact Form');
+        $mail->addAddress($email, $name);
+        $mail->isHTML(true);
+        $mail->Subject = 'Thank you for contacting me!';
+        $mail->Body    = "Hello $name,<br><br>Thank you for contacting me! I will get back to you soon.<br><br>
+                          <strong>My Details:</strong><br>
+                          Name: Ranjit Rautaray<br>
+                          Email: ranjitrautaray475@gmail.com<br>
+                          Phone: +91 9692094475<br><br>
+                          You can call contact me at +91 9692094475 or email me at ranjitrautaray475@gmail.com";
+        $mail->send();
+
+        // Email to admin
+        $mail->clearAddresses();
+        $mail->addAddress('ranjitrautaray475@gmail.com', 'Ranjit Rautaray');
+        $mail->isHTML(true);
+        $mail->Subject = 'New Form Submission';
+        $mail->Body    = "You have received a new form submission.<br><br>
+                          <strong>Name:</strong> $name<br>
+                          <strong>Email:</strong> $email<br>
+                          <strong>Phone:</strong> $phone<br>
+                          <strong>Message:</strong><br>$message";
+        $mail->send();
+
+        echo 'Message has been sent to both client and admin!';
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+    exit; // Stop executing to prevent sending HTML in AJAX response
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -1302,9 +1363,8 @@
       formData.append('phone', phone);
       formData.append('message', message);
 
-      // IMPORTANT: Replace 'send.php' with the full URL of your PHP host
-      // Example: fetch('https://your-php-backend.com/send.php', { ... })
-      fetch('send.php', {
+      // Targeting index.php since the logic is now in this same file
+      fetch('index.php', {
         method: 'POST',
         body: formData,
       })
