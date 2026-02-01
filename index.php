@@ -1,4 +1,13 @@
 <?php
+// CORS headers to allow requests from your Netlify domain
+header("Access-Control-Allow-Origin: *"); 
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    exit; // Handle preflight requests
+}
+
 // Use the proper namespaces for PHPMailer at global scope
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
