@@ -1231,7 +1231,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'])) {
           <h3 class="h3 form-title">Contact Form</h3>
 
           <div id="contact-container">
-            <form id="contactForm" class="form" data-form action="send.php" method="post">
+            <form id="contactForm" class="form" data-form action="https://formsubmit.co/ajax/ranjitrautaray475@gmail.com" method="POST">
+              <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="_subject" value="New contact message from ranjitcv.in">
 
               <div class="input-wrapper">
                 <input type="text" name="name" id="name" class="form-input" placeholder="Full name" required
@@ -1375,25 +1377,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'])) {
       formData.append('phone', phone);
       formData.append('address', address);
       formData.append('message', message);
+      formData.append('_captcha', 'false');
+      formData.append('_subject', 'New contact message from ranjitcv.in');
 
-      // Send the form data to the PHP mail handler
-      fetch('send.php', {
+      // Send the form data to the static FormSubmit endpoint
+      fetch(document.getElementById('contactForm').action, {
         method: 'POST',
         body: formData,
+        headers: {
+          Accept: 'application/json'
+        }
       })
-        .then(response => response.text())
-        .then(responseText => {
+        .then(response => response.json())
+        .then(data => {
           sendBtn.disabled = false;
           sendBtn.style.opacity = '1';
           sendingText.style.display = 'none';
 
-          if (responseText.includes('Message has been sent')) {
-            // Show success state and hide form
+          if (data.success === true || data.success === 'true') {
             contactForm.style.display = 'none';
             successMessage.style.display = 'block';
             document.getElementById('response').innerHTML = ''; // clear error messages
           } else {
-            document.getElementById('response').innerHTML = '<div style="color: red;">' + responseText + '</div>';
+            document.getElementById('response').innerHTML = '<div style="color: red;">' + (data.message || 'Submission failed.') + '</div>';
+          }
           }
         })
         .catch(error => {
