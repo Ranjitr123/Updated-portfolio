@@ -1170,11 +1170,11 @@
           <h3 class="h3 form-title">Contact Form</h3>
 
           <div id="contact-container">
-            <form id="contactForm" class="form" data-form action="https://formsubmit.co/ranjitrautaray475@gmail.com" method="POST">
+            <form id="contactForm" class="form" data-form action="https://formsubmit.co/ajax/ranjitrautaray475@gmail.com" method="POST">
               <input type="hidden" name="_subject" value="New contact message from ranjitcv.in">
-              <input type="hidden" name="_next" value="https://ranjitcv.in/#success">
-              <input type="hidden" name="_autoresponse" value="Thank you for getting in touch! I have received your message and will respond as soon as possible.">
+              <input type="hidden" name="_captcha" value="false">
               <input type="hidden" name="_replyto" value="email">
+              <input type="hidden" name="_autoresponse" value="Thank you for getting in touch! I have received your message and will respond as soon as possible.">
 
               <div class="input-wrapper">
                 <input type="text" name="name" id="name" class="form-input" placeholder="Full name" required
@@ -1288,19 +1288,61 @@
   </script> -->
 
   <script>
-    const showSuccessMessage = () => {
-      if (window.location.hash === '#success') {
-        const contactForm = document.getElementById('contactForm');
-        const successMessage = document.getElementById('successMessage');
-        if (contactForm && successMessage) {
-          contactForm.style.display = 'none';
-          successMessage.style.display = 'block';
-          document.getElementById('response').innerHTML = '<div style="color: #8bc34a;">Your message has been submitted successfully! A confirmation email has been sent to you.</div>';
-          history.replaceState(null, '', window.location.pathname);
-        }
+    document.getElementById('contactForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const sendBtn = document.getElementById('sendBtn');
+      const sendingText = document.getElementById('sendingText');
+      const contactForm = document.getElementById('contactForm');
+      const successMessage = document.getElementById('successMessage');
+      const responseEl = document.getElementById('response');
+
+      if (!name || !email || !phone || !address || !message) {
+        responseEl.innerHTML = '<div style="color: red;">All fields are required.</div>';
+        return;
       }
-    };
-    document.addEventListener('DOMContentLoaded', showSuccessMessage);
+
+      sendBtn.disabled = true;
+      sendBtn.style.opacity = '0.5';
+      sendingText.style.display = 'inline';
+      responseEl.innerHTML = '';
+
+      const formData = new FormData(this);
+
+      fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Accept: 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          sendBtn.disabled = false;
+          sendBtn.style.opacity = '1';
+          sendingText.style.display = 'none';
+
+          if (data.success === true || data.success === 'true') {
+            contactForm.style.display = 'none';
+            successMessage.style.display = 'block';
+            responseEl.innerHTML = '<div style="color: #8bc34a;">' + (data.message || 'Your message has been submitted successfully! A confirmation email has been sent to you.') + '</div>';
+          } else {
+            responseEl.innerHTML = '<div style="color: red;">' + (data.message || 'Submission failed.') + '</div>';
+          }
+        })
+        .catch(error => {
+          console.error('Form submit error:', error);
+          sendBtn.disabled = false;
+          sendBtn.style.opacity = '1';
+          sendingText.style.display = 'none';
+          responseEl.innerHTML = '<div style="color: red;">Something went wrong. Please try again later.</div>';
+        });
+    });
   </script>
 
 
