@@ -1231,7 +1231,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'])) {
           <h3 class="h3 form-title">Contact Form</h3>
 
           <div id="contact-container">
-            <form id="contactForm" class="form" data-form>
+            <form id="contactForm" class="form" data-form action="send.php" method="post">
 
               <div class="input-wrapper">
                 <input type="text" name="name" id="name" class="form-input" placeholder="Full name" required
@@ -1241,6 +1241,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'])) {
               </div>
               <div class="input-wrapper">
                 <input type="tel" name="phone" id="phone" class="form-input" placeholder="Phone Number" required
+                  data-form-input>
+                <input type="text" name="address" id="address" class="form-input" placeholder="Address" required
                   data-form-input>
               </div>
 
@@ -1366,14 +1368,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'])) {
       sendBtn.style.opacity = '0.5';
       sendingText.style.display = 'inline';
 
+      const address = document.getElementById('address').value.trim();
       const formData = new FormData();
       formData.append('name', name);
       formData.append('email', email);
       formData.append('phone', phone);
+      formData.append('address', address);
       formData.append('message', message);
 
-      // Targeting index.php since the logic is now in this same file
-      fetch('index.php', {
+      // Send the form data to the PHP mail handler
+      fetch('send.php', {
         method: 'POST',
         body: formData,
       })
