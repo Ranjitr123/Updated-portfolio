@@ -1353,9 +1353,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'])) {
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
       const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
       const message = document.getElementById('message').value.trim();
 
-      if (!name || !email || !phone || !message) {
+      if (!name || !email || !phone || !address || !message) {
         document.getElementById('response').innerHTML = '<div style="color: red;">All fields are required.</div>';
         return;
       }
@@ -1397,7 +1398,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'])) {
           if (data.success === true || data.success === 'true') {
             contactForm.style.display = 'none';
             successMessage.style.display = 'block';
-            document.getElementById('response').innerHTML = ''; // clear error messages
+            document.getElementById('response').innerHTML = '<div style="color: #8bc34a;">' + (data.message || 'Your message has been sent successfully! I will contact you soon.') + '</div>';
           } else {
             document.getElementById('response').innerHTML = '<div style="color: red;">' + (data.message || 'Submission failed.') + '</div>';
           }
